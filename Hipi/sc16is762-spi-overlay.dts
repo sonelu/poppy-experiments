@@ -1,0 +1,58 @@
+// Definition for the SC16IS762 UART
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "brcm,brcm2708";
+	
+	fragment@0 {
+		target = <&spi0>;
+		__overlay__ {
+			#address_cells = <1>;
+			#size-cells = <0>;
+			status = "okay";
+			
+			sc16is762: sc16is762@0 {
+				compatible = "nxp,sc16is762";
+				reg = <0>;
+				clocks = <&sc16is762_clock>;
+				interrupt-parent = <&gpio>;
+				interrupts = <255 2>; /* high-to-low edge triggered */
+				gpio-controller;
+				#gpio-cells = <2>;
+			};
+		};
+	};
+	
+	fragment@1 {
+		target = <&clocks>;
+		__overlay__ {
+			#address-cells = <1>;
+			#size_cells = <0>;
+			status = "okay";
+			
+			sc16is762_clock: sc16is762_clock@10 {
+				compatible = "fixed-clock";
+				reg = <10>;
+				#clock-cells = <0>;
+				clock-output-name = "sc16is762";
+				clock-frequency = <0>;
+			};
+		};
+	};
+	
+	fragment@2 {
+		target = <&gpio>;
+		__overlay__ {
+			sc16is762pins: sc16is762_pins {
+				brcm,pins = <255>;
+				brcm,function = <0>; /* in */
+			};
+		};
+	};
+	
+	__overrides__ {
+		clkrate = <&sc16is762_clock>,"clock-frequency:0";
+		irqpin = <&sc16is762>, "interrupts:0", <&sc16is762_pins>,"brcm,pins:0";
+	};
+};
