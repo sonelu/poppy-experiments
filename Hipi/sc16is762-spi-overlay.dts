@@ -3,7 +3,7 @@
 /plugin/;
 
 / {
-	compatible = "brcm,bcm2708";
+	compatible = "brcm,bcm2709";
 	
 	fragment@0 {
 		target = <&spi0>;
@@ -12,6 +12,15 @@
 			#size-cells = <0>;
 			status = "okay";
 			
+			/* disable spidev */
+			spidev@0 {
+				status = "disabled";
+			};
+
+			spidev@1 {
+				status = "disabled";
+			};
+
 			sc16is762: sc16is762@0 {
 				compatible = "nxp,sc16is762";
 				reg = <0>;
@@ -20,6 +29,7 @@
 				interrupts = <255 2>; /* high-to-low edge triggered */
 				gpio-controller;
 				#gpio-cells = <2>;
+				spi-max-frequency = <4000000>;
 			};
 		};
 	};
@@ -44,7 +54,7 @@
 	fragment@2 {
 		target = <&gpio>;
 		__overlay__ {
-			sc16is762pins: sc16is762_pins {
+			sc16is762_pins: sc16is762_pins {
 				brcm,pins = <255>;
 				brcm,function = <0>; /* in */
 			};
